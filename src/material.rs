@@ -7,16 +7,16 @@ pub struct Hit<'a> {
     pub t: f32,
     pub p: Vec3,
     pub n: Vec3,
-    pub m: &'a Box<Material +'a>,
+    pub m: &'a Box<Material>
 }
 
 impl<'a> Hit<'a> {
-    pub fn new(nt: f32, np: Vec3, nn: Vec3, mm: &'a Box<Material+'a>) -> Hit<'a> { Hit { t:nt, p:np, n:nn, m:mm } }
+    pub fn new(nt: f32, np: Vec3, nn: Vec3, mm: &'a Box<Material>) -> Hit<'a> { Hit { t:nt, p:np, n:nn, m:mm } }
 }
 
 pub struct Scattered {
     pub scattered: Ray,
-    pub attenuation: Vec3,
+    pub attenuation: Vec3
 }
 
 pub trait Material {
@@ -39,7 +39,6 @@ impl Material for Lambertian {
         Some(Scattered { scattered:Ray::new(rec.p, target - rec.p), attenuation:self.albedo })
     }
 }
-
 
 // Metal
 //
@@ -105,4 +104,3 @@ impl Material for Dielectric {
         }
     }
 }
-
