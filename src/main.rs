@@ -10,6 +10,7 @@ use std::fs::File;
 use std::path::Path;
 use std::f32;
 //use rand::Rng;
+use std::f32::consts::PI;
 
 use vec3::*;
 use ray::*;
@@ -86,16 +87,25 @@ struct Camera {
 }
 
 impl Camera {
-    fn new() -> Camera {
+    fn new(lookfrom:Vec3, lookat:Vec3, vup: Vec3, vfov: f32, aspect:f32) -> Camera {
+        let theta = vfov * PI / 180.0;
+        let half_height = (theta/2.0).tan();
+        let half_width = aspect * half_height;
+
+        let w = unit_vector(lookfrom - lookat);
+        let u = unit_vector(cross(vup, w));
+        let v = cross(w, u);
+        
         Camera {
-            origin:Vec3::new(0.0, 0.0, 0.0), 
-            lower_left_corner:Vec3::new(-2.0, -1.0, -1.0),
-            horizontal:Vec3::new(4.0, 0.0, 0.0),
-            vertical:Vec3::new(0.0, 2.0, 0.0)
+            origin: lookfrom,  
+            lower_left_corner: lookfrom - half_width*u - half_height*v - w,
+            horizontal: 2.0 * half_width * u,
+            vertical: 2.0 * half_height * v
         }
     }
 
-    fn get_ray(&self, u: f32, v:f32) -> Ray { Ray::new(self.origin, self.lower_left_corner + u*self.horizontal + v*self.vertical) }
+    fn get_ray(&self, u: f32, v:f32) -> Ray { Ray::new(self.origin,
+                                                       self.lower_left_corner + u*self.horizontal + v*self.vertical - self.origin) }
 }
 
 fn colour(r: &Ray, world: &Hitable, depth: i32) -> Vec3 {
@@ -126,8 +136,8 @@ fn main() {
     let ny = 100;
     let ns = 100;
     
-    let cam = Camera::new();
-
+    let cam = Camera::new(Vec3::new(-2.0,2.0,1.0), Vec3::new(0.0,0.0,-1.0), Vec3::new(0.0,1.0,0.0), 90.0, nx as f32 / ny as f32);
+    
     let world = HitableList {
         list: vec!(
             Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, Box::new(Lambertian::new(Vec3::new(0.1, 0.2, 0.5))))),
@@ -143,7 +153,6 @@ fn main() {
     write!(file, "P6\n{width} {height}\n255\n", width=nx, height=ny).expect("can't write");
     
     for j in (0..ny).rev() {
-//        println!("Line: {}", j);
         for i in 0..nx {
             let mut col = Vec3::zero();
 

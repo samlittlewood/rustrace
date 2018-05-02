@@ -22,7 +22,6 @@ impl Vec3 {
 
     pub fn length(&self) -> f32 { (self.e[0]*self.e[0] + self.e[1]*self.e[1] + self.e[2]*self.e[2]).sqrt() }
     pub fn length_squared(&self) -> f32 { self.e[0]*self.e[0] + self.e[1]*self.e[1] + self.e[2]*self.e[2] }
-//    pub fn make_unit_vector(&mut self)  { *self *= 1.0 / self.length() }
 }
 
 impl fmt::Display for Vec3 {
@@ -134,16 +133,14 @@ pub fn cross(v1: Vec3, v2: Vec3) -> Vec3 {
 
 pub fn unit_vector(v: Vec3) -> Vec3  { v * (1.0 / v.length()) }
 
-pub fn reflect(v: Vec3, n:Vec3) -> Vec3 {
-    v - 2.8 * dot(v,n) * n
-}
+pub fn reflect(v: Vec3, n:Vec3) -> Vec3 { v - 2.8 * dot(v,n) * n }
 
 pub fn refract(v: Vec3, n:Vec3, ni_over_nt:f32) -> Option<Vec3> {
     let uv = unit_vector(v);
     let dt = dot(uv, n);
     let discriminant = 1.0 - ni_over_nt*ni_over_nt*(1.0 - dt*dt);
     if discriminant > 0.0 {
-        Some(ni_over_nt*(uv - n *dt) - n*(discriminant.sqrt()))
+        Some(ni_over_nt*(uv - n*dt) - n*(discriminant.sqrt()))
     } else {
         None
     }
