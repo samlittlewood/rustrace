@@ -1,0 +1,7 @@
+[package]
+name = "rustrace"
+version = "0.1.0"
+authors = ["Sam Littlewood <sam.littlewood@v-nova.com>"]
+
+[dependencies]
+rand = "0.4.2"
